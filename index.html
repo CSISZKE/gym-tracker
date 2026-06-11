@@ -45,6 +45,8 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 .hist-prog{font-size:13px;color:#ccc;font-weight:600;}
 .hist-date{font-size:11px;color:#9a9a9a;}
 .hist-sets{font-size:11px;color:#adadad;font-family:monospace;}
+.hist-right{display:flex;align-items:center;gap:12px;}
+.hist-del{background:none;border:1px solid #5a2626;border-radius:6px;color:#ff6b6b;font-size:12px;line-height:1;width:26px;height:24px;padding:0;flex:none;}
 #view-all-history{width:100%;margin-top:16px;padding:10px;background:none;border:1px solid #1a1a1a;border-radius:8px;color:#8a8a8a;font-size:11px;letter-spacing:2px;}
 
 /* ── PROGRAMME EDITOR (name/setup) ── */
@@ -551,7 +553,13 @@ function renderHistoryPreview(){
     const row = document.createElement('div');
     row.className='hist-row';
     const totalSets = h.exercises.reduce((a,e)=>a+e.sets.length,0);
-    row.innerHTML=`<div><div class="hist-prog">${esc(h.progName)}</div><div class="hist-date">${fmtDateShort(h.date)}</div></div><div class="hist-sets">${totalSets} sets</div>`;
+    row.innerHTML=`<div><div class="hist-prog">${esc(h.progName)}</div><div class="hist-date">${fmtDateShort(h.date)}</div></div><div class="hist-right"><span class="hist-sets">${totalSets} sets</span><button class="hist-del" title="Delete session">✕</button></div>`;
+    row.querySelector('.hist-del').addEventListener('click',()=>{
+      if(confirm('Delete this session from history? This cannot be undone.')){
+        state.history = state.history.filter(x=>x.date!==h.date);
+        save(); renderHome();
+      }
+    });
     el.appendChild(row);
   });
 }
