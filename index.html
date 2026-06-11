@@ -23,62 +23,64 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 /* ── HOME ── */
 #home{padding:0 0 80px;}
 #home-header{padding:36px 20px 24px;}
-#home-title{font-size:11px;color:#444;letter-spacing:3px;margin-bottom:6px;}
+#home-title{font-size:11px;color:#9a9a9a;letter-spacing:3px;margin-bottom:6px;}
 #home-subtitle{font-size:26px;font-weight:800;color:#fff;}
-#programmes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px;}
-.prog-card{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:20px 16px 16px;cursor:pointer;position:relative;transition:border-color 0.15s;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;}
-.prog-card:active{border-color:#333;}
-.prog-card.empty{border-style:dashed;border-color:#1e1e1e;align-items:center;justify-content:center;}
+#programmes-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:0 20px;}
+.prog-card{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:18px 18px 16px;cursor:pointer;position:relative;transition:border-color 0.15s;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;}
+.prog-card:active{border-color:#444;}
+.prog-card.active-session{border-color:#DBFF00;}
+.prog-card.empty{border-style:dashed;border-color:#222;align-items:center;justify-content:center;min-height:60px;}
+.prog-card-resume{font-size:11px;color:#DBFF00;margin-top:8px;font-weight:700;letter-spacing:0.5px;}
 .prog-card-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3;}
-.prog-card-meta{font-size:11px;color:#444;letter-spacing:0.5px;}
-.prog-card-last{font-size:10px;color:#333;margin-top:8px;}
+.prog-card-meta{font-size:11px;color:#9a9a9a;letter-spacing:0.5px;}
+.prog-card-last{font-size:10px;color:#8a8a8a;margin-top:8px;}
 .prog-card-bar-bg{height:2px;background:#161616;border-radius:1px;margin-top:12px;overflow:hidden;}
 .prog-card-bar{height:100%;background:linear-gradient(90deg,#DBFF00,#FF40B4);border-radius:1px;width:0%;}
-.prog-card-add{font-size:28px;color:#2a2a2a;}
-.prog-card-edit{position:absolute;top:10px;right:10px;background:none;border:none;color:#2a2a2a;font-size:14px;padding:4px;}
-.home-section-title{font-size:10px;color:#333;letter-spacing:2px;padding:24px 20px 10px;}
+.prog-card-add{font-size:28px;color:#787878;}
+.prog-card-edit{position:absolute;top:10px;right:10px;background:none;border:none;color:#787878;font-size:14px;padding:4px;}
+.home-section-title{font-size:10px;color:#8a8a8a;letter-spacing:2px;padding:24px 20px 10px;}
 #history-preview{padding:0 20px;}
 .hist-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #111;}
 .hist-row:last-child{border-bottom:none;}
 .hist-prog{font-size:13px;color:#ccc;font-weight:600;}
-.hist-date{font-size:11px;color:#444;}
-.hist-sets{font-size:11px;color:#555;font-family:monospace;}
-#view-all-history{width:100%;margin-top:16px;padding:10px;background:none;border:1px solid #1a1a1a;border-radius:8px;color:#333;font-size:11px;letter-spacing:2px;}
+.hist-date{font-size:11px;color:#9a9a9a;}
+.hist-sets{font-size:11px;color:#adadad;font-family:monospace;}
+#view-all-history{width:100%;margin-top:16px;padding:10px;background:none;border:1px solid #1a1a1a;border-radius:8px;color:#8a8a8a;font-size:11px;letter-spacing:2px;}
 
 /* ── PROGRAMME EDITOR (name/setup) ── */
 #prog-editor{padding:0;}
 #pe-header{padding:20px 20px 0;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;padding-bottom:16px;}
-#pe-back{background:none;border:none;color:#555;font-size:22px;padding:4px 8px 4px 0;}
+#pe-back{background:none;border:none;color:#adadad;font-size:22px;padding:4px 8px 4px 0;}
 #pe-title-wrap{flex:1;}
 #pe-prog-name{font-size:18px;font-weight:700;color:#fff;background:none;border:none;outline:none;width:100%;}
-#pe-prog-name::placeholder{color:#333;}
+#pe-prog-name::placeholder{color:#8a8a8a;}
 #pe-exercises{padding:16px 20px 0;}
 .pe-ex-card{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:10px;overflow:hidden;}
 .pe-ex-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;gap:8px;}
 .pe-ex-name-input{background:none;border:none;outline:none;color:#e0e0e0;font-size:14px;font-weight:600;flex:1;min-width:0;}
 .pe-muscle-chip{background:#161616;border:1px solid #222;border-radius:20px;color:#888;font-size:10px;letter-spacing:0.5px;padding:5px 10px;white-space:nowrap;}
-.pe-ex-del{background:none;border:none;color:#2a2a2a;font-size:18px;padding:0 4px;}
+.pe-ex-del{background:none;border:none;color:#787878;font-size:18px;padding:0 4px;}
 .pe-ex-sets{padding:0 14px;}
 .pe-set-row{display:grid;grid-template-columns:28px 1fr 1fr 32px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid #161616;}
-.pe-set-num{font-size:11px;color:#444;font-family:monospace;}
-.pe-unit{font-size:10px;color:#333;}
-.pe-set-del{background:none;border:none;color:#2a2a2a;font-size:16px;}
-.pe-add-set{display:block;width:100%;padding:8px;background:none;border:1px dashed #1a1a1a;border-radius:6px;color:#333;font-size:11px;letter-spacing:1px;margin:8px 0 12px;}
-#pe-add-ex{width:100%;padding:12px;background:none;border:1px dashed #222;border-radius:10px;color:#444;font-size:13px;letter-spacing:1px;margin-top:4px;}
+.pe-set-num{font-size:11px;color:#9a9a9a;font-family:monospace;}
+.pe-unit{font-size:10px;color:#8a8a8a;}
+.pe-set-del{background:none;border:none;color:#787878;font-size:16px;}
+.pe-add-set{display:block;width:100%;padding:8px;background:none;border:1px dashed #1a1a1a;border-radius:6px;color:#8a8a8a;font-size:11px;letter-spacing:1px;margin:8px 0 12px;}
+#pe-add-ex{width:100%;padding:12px;background:none;border:1px dashed #222;border-radius:10px;color:#9a9a9a;font-size:13px;letter-spacing:1px;margin-top:4px;}
 #pe-save{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:440px;padding:14px;background:#DBFF00;border:none;border-radius:12px;color:#000;font-size:14px;font-weight:800;letter-spacing:1px;z-index:20;}
 
 /* ── SESSION ── */
 #session{padding:0;}
 #sess-header{padding:20px 20px 16px;border-bottom:1px solid #111;position:sticky;top:0;background:#080808;z-index:10;}
 #sess-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;}
-#sess-back{background:none;border:none;color:#555;font-size:22px;padding:4px 8px 4px 0;}
-#sess-prog-name{font-size:11px;color:#444;letter-spacing:2px;}
+#sess-back{background:none;border:none;color:#adadad;font-size:22px;padding:4px 8px 4px 0;}
+#sess-prog-name{font-size:11px;color:#9a9a9a;letter-spacing:2px;}
 #sess-date{font-size:16px;font-weight:700;color:#fff;}
 #sess-timer{align-self:center;font-family:monospace;font-size:18px;font-weight:700;color:#DBFF00;cursor:pointer;text-align:center;min-width:64px;}
-#sess-timer.not-started{color:#555;font-size:12px;font-weight:600;letter-spacing:1px;border:1px solid #2a2a2a;border-radius:20px;padding:7px 12px;}
+#sess-timer.not-started{color:#adadad;font-size:12px;font-weight:600;letter-spacing:1px;border:1px solid #2a2a2a;border-radius:20px;padding:7px 12px;}
 #sess-count{font-size:26px;font-weight:800;font-family:monospace;color:#fff;line-height:1;}
-#sess-count span{color:#333;font-size:18px;}
-#sess-count-label{font-size:10px;color:#444;letter-spacing:1px;text-align:right;}
+#sess-count span{color:#8a8a8a;font-size:18px;}
+#sess-count-label{font-size:10px;color:#9a9a9a;letter-spacing:1px;text-align:right;}
 #sess-progress-bg{height:2px;background:#161616;border-radius:1px;overflow:hidden;margin-top:14px;}
 #sess-progress{height:100%;background:linear-gradient(90deg,#DBFF00,#FF40B4);width:0%;transition:width 0.4s;}
 #sess-exercises{padding:16px 20px 0;}
@@ -87,40 +89,40 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 .ex-hdr.collapsed{border-bottom:none;}
 .ex-hdr-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
 .ex-hdr-name{font-size:15px;font-weight:600;color:#e0e0e0;}
-.ex-hdr-muscle{font-size:10px;color:#555;letter-spacing:0.5px;margin-top:2px;}
-.ex-hdr-prog{font-size:11px;color:#444;font-family:monospace;transition:color 0.2s;}
+.ex-hdr-muscle{font-size:10px;color:#adadad;letter-spacing:0.5px;margin-top:2px;}
+.ex-hdr-prog{font-size:11px;color:#9a9a9a;font-family:monospace;transition:color 0.2s;}
 .ex-hdr-prog.complete{color:#DBFF00;}
 .ex-hdr-right{display:flex;align-items:center;gap:6px;}
-.ex-act{background:none;border:1px solid #222;border-radius:6px;color:#666;font-size:14px;width:30px;height:30px;line-height:1;padding:0;}
+.ex-act{background:none;border:1px solid #222;border-radius:6px;color:#b8b8b8;font-size:14px;width:30px;height:30px;line-height:1;padding:0;}
 .ex-mini-bg{width:40px;height:3px;background:#1a1a1a;border-radius:2px;overflow:hidden;margin-left:2px;}
 .ex-mini-bar{height:100%;background:#DBFF00;width:0%;transition:width 0.3s;}
 .ex-body{padding:0 16px;}
 .set-row{display:grid;grid-template-columns:28px 1fr 1fr 40px 40px;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid #1e1e1e;transition:opacity 0.2s;}
 .set-row.done{opacity:0.4;}
-.set-num{font-size:11px;color:#555;font-family:monospace;}
+.set-num{font-size:11px;color:#adadad;font-family:monospace;}
 .set-grp{display:flex;align-items:center;gap:4px;}
-.set-grp span{font-size:11px;color:#444;}
+.set-grp span{font-size:11px;color:#9a9a9a;}
 .val-chip{background:#161616;border:1px solid #222;border-radius:4px;color:#ccc;font-size:13px;padding:5px 4px;min-width:50px;text-align:center;outline:none;font-family:monospace;height:32px;}
-.done-btn{background:none;border:1px solid #333;border-radius:4px;color:#555;font-size:13px;padding:5px;line-height:1;width:40px;height:32px;transition:all 0.15s;}
+.done-btn{background:none;border:1px solid #333;border-radius:4px;color:#adadad;font-size:13px;padding:5px;line-height:1;width:40px;height:32px;transition:all 0.15s;}
 .done-btn.done{background:#DBFF00;border-color:#DBFF00;color:#000;}
-.set-del{background:none;border:1px solid #2a2a2a;border-radius:4px;color:#555;font-size:18px;line-height:1;width:40px;height:32px;}
-.add-set-btn{display:block;width:100%;padding:9px;background:none;border:1px dashed #1e1e1e;border-radius:6px;color:#444;font-size:11px;letter-spacing:1px;margin:8px 0 12px;}
-#sess-finish{width:calc(100% - 40px);margin:8px 20px 0;padding:14px;background:#1a1a1a;border:none;border-radius:12px;color:#555;font-size:13px;letter-spacing:1px;}
+.set-del{background:none;border:1px solid #2a2a2a;border-radius:4px;color:#adadad;font-size:18px;line-height:1;width:40px;height:32px;}
+.add-set-btn{display:block;width:100%;padding:9px;background:none;border:1px dashed #1e1e1e;border-radius:6px;color:#9a9a9a;font-size:11px;letter-spacing:1px;margin:8px 0 12px;}
+#sess-finish{width:calc(100% - 40px);margin:8px 20px 0;padding:14px;background:#1a1a1a;border:none;border-radius:12px;color:#adadad;font-size:13px;letter-spacing:1px;}
 #sess-finish.ready{background:#DBFF00;color:#000;font-weight:800;}
 
 /* ── HISTORY SCREEN ── */
 #history-screen{padding:0;}
 #hs-header{display:flex;align-items:center;gap:12px;padding:24px 20px 16px;border-bottom:1px solid #111;}
-#hs-back{background:none;border:none;color:#555;font-size:22px;padding:4px 8px 4px 0;}
+#hs-back{background:none;border:none;color:#adadad;font-size:22px;padding:4px 8px 4px 0;}
 #hs-title{font-size:18px;font-weight:700;color:#fff;}
 #hs-list{padding:0 20px;}
 .hs-entry{border-bottom:1px solid #111;padding:16px 0;}
 .hs-entry:last-child{border-bottom:none;}
 .hs-entry-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
 .hs-entry-prog{font-size:14px;font-weight:700;color:#fff;}
-.hs-entry-date{font-size:11px;color:#444;}
+.hs-entry-date{font-size:11px;color:#9a9a9a;}
 .hs-entry-exes{display:flex;flex-direction:column;gap:4px;}
-.hs-ex-line{font-size:12px;color:#555;}
+.hs-ex-line{font-size:12px;color:#adadad;}
 .hs-ex-name{color:#888;font-weight:600;}
 
 /* ── GENERIC BOTTOM-SHEET MODALS ── */
@@ -130,33 +132,33 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 .modal-kicker{font-size:11px;color:#DBFF00;letter-spacing:2px;margin-bottom:10px;}
 .modal-h{font-size:18px;font-weight:700;color:#fff;}
 .modal-primary{width:100%;margin-top:8px;padding:14px;background:#DBFF00;border:none;border-radius:12px;color:#000;font-size:14px;font-weight:800;letter-spacing:0.5px;}
-.modal-ghost{width:100%;margin-top:10px;padding:11px;background:none;border:none;color:#444;font-size:12px;letter-spacing:1px;}
+.modal-ghost{width:100%;margin-top:10px;padding:11px;background:none;border:none;color:#9a9a9a;font-size:12px;letter-spacing:1px;}
 
 /* ── ADJUST POPUP ── */
 #adjust-ex{margin-bottom:4px;}
-#adjust-hint{font-size:12px;color:#555;margin-bottom:18px;}
+#adjust-hint{font-size:12px;color:#adadad;margin-bottom:18px;}
 #adjust-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px;}
 .adj-col{background:#161616;border:1px solid #222;border-radius:12px;padding:14px 6px;text-align:center;}
-.adj-lbl{font-size:10px;color:#666;letter-spacing:1px;margin-bottom:10px;}
+.adj-lbl{font-size:10px;color:#b8b8b8;letter-spacing:1px;margin-bottom:10px;}
 .adj-up,.adj-down{width:38px;height:38px;border-radius:50%;background:#0d0d0d;border:1px solid #2a2a2a;color:#DBFF00;font-size:20px;line-height:1;}
 .adj-val{display:block;width:100%;background:none;border:none;color:#fff;font-size:24px;font-family:monospace;margin:6px 0;padding:4px 0;}
-.adj-unit{font-size:10px;color:#444;}
+.adj-unit{font-size:10px;color:#9a9a9a;}
 
 /* ── SUMMARY ── */
 #summary-sheet{text-align:left;}
 #sum-prog{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;}
-#sum-meta{font-size:12px;color:#555;margin-bottom:18px;}
+#sum-meta{font-size:12px;color:#adadad;margin-bottom:18px;}
 #sum-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .sum-stat{background:#161616;border:1px solid #1e1e1e;border-radius:12px;padding:14px;}
-.sum-stat .k{font-size:10px;color:#555;letter-spacing:1px;margin-bottom:6px;}
+.sum-stat .k{font-size:10px;color:#adadad;letter-spacing:1px;margin-bottom:6px;}
 .sum-stat .v{font-size:22px;font-weight:800;color:#fff;font-family:monospace;}
 .sum-stat .v.lime{color:#DBFF00;}
 #sum-muscles{font-size:13px;color:#aaa;background:#161616;border:1px solid #1e1e1e;border-radius:12px;padding:12px 14px;margin-bottom:16px;}
-#sum-muscles .k{font-size:10px;color:#555;letter-spacing:1px;margin-bottom:6px;}
+#sum-muscles .k{font-size:10px;color:#adadad;letter-spacing:1px;margin-bottom:6px;}
 .sum-ex-line{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #161616;font-size:13px;}
 .sum-ex-line:last-child{border-bottom:none;}
 .sum-ex-name{color:#aaa;}
-.sum-ex-vol{color:#555;font-family:monospace;}
+.sum-ex-vol{color:#adadad;font-family:monospace;}
 
 /* ── LIST MODAL (swap / muscle pick) ── */
 #list-body{max-height:55vh;overflow-y:auto;margin-bottom:6px;}
@@ -173,7 +175,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 #wheel-scroll{height:200px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
 #wheel-scroll::-webkit-scrollbar{display:none;}
 #wheel-list{padding:80px 0;}
-.wheel-item{height:40px;line-height:40px;text-align:center;font-size:20px;font-family:monospace;color:#3a3a3a;scroll-snap-align:center;transition:color 0.12s,font-size 0.12s;}
+.wheel-item{height:40px;line-height:40px;text-align:center;font-size:20px;font-family:monospace;color:#8a8a8a;scroll-snap-align:center;transition:color 0.12s,font-size 0.12s;}
 .wheel-item.sel{color:#fff;font-size:26px;}
 #wheel-center{position:absolute;left:8px;right:8px;top:80px;height:40px;border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a;pointer-events:none;}
 #wheel-done{width:100%;margin-top:16px;padding:13px;background:#DBFF00;border:none;border-radius:10px;color:#000;font-size:14px;font-weight:800;}
@@ -182,14 +184,14 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 #timer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;z-index:100;}
 #timer-overlay.active{display:flex;}
 #timer-box{background:#111;border:1px solid #222;border-radius:16px;padding:36px;text-align:center;min-width:280px;}
-#timer-label{color:#444;font-size:11px;letter-spacing:3px;margin-bottom:20px;}
+#timer-label{color:#9a9a9a;font-size:11px;letter-spacing:3px;margin-bottom:20px;}
 #timer-ring{position:relative;width:140px;height:140px;margin:0 auto 20px;}
 #timer-ring svg{transform:rotate(-90deg);}
 #t-bg{fill:none;stroke:#1a1a1a;stroke-width:6;}
 #t-fg{fill:none;stroke:#DBFF00;stroke-width:6;stroke-dasharray:376.99;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke 0.3s;}
 #t-display{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:34px;color:#fff;letter-spacing:-1px;}
 #timer-presets{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
-.tpre{background:none;border:1px solid #2a2a2a;border-radius:4px;color:#555;font-size:11px;padding:4px 10px;}
+.tpre{background:none;border:1px solid #2a2a2a;border-radius:4px;color:#adadad;font-size:11px;padding:4px 10px;}
 .tpre.active{background:#222;color:#aaa;}
 #timer-btns{display:flex;gap:8px;justify-content:center;}
 #t-pause{background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#ccc;padding:10px 20px;font-size:13px;}
@@ -459,6 +461,7 @@ let state = (function(){
 
 // Active session state
 let activeProgId = null;
+let sessionInProgress = false; // true while a session is open (lets you leave home and resume)
 let sessionSets = []; // [{name,muscle,sets:[{w,r,done}],adjustShown}]
 let editingProgId = null;
 let editorProg = null;  // working copy while editing
@@ -493,13 +496,21 @@ function renderProgrammeCards(){
       const last = [...state.history].reverse().find(h=>h.progId===prog.id);
       const lastStr = last ? fmtDateShort(last.date) : 'No sessions yet';
       const totalSets = prog.exercises.reduce((a,e)=>a+e.sets.length,0);
+      const isActive = sessionInProgress && activeProgId===prog.id;
+      let pct = 0, statusLine = `<div class="prog-card-last">Last: ${lastStr}</div>`;
+      if(isActive){
+        let d=0,t=0; sessionSets.forEach(e=>{ t+=e.sets.length; d+=e.sets.filter(s=>s.done).length; });
+        pct = t ? Math.round(d/t*100) : 0;
+        statusLine = `<div class="prog-card-resume">● In progress · ${d}/${t} sets · tap to resume</div>`;
+        card.classList.add('active-session');
+      }
       card.innerHTML=`
         <div>
           <div class="prog-card-name">${esc(prog.name)}</div>
           <div class="prog-card-meta">${prog.exercises.length} exercises · ${totalSets} sets</div>
-          <div class="prog-card-last">Last: ${lastStr}</div>
+          ${statusLine}
         </div>
-        <div class="prog-card-bar-bg"><div class="prog-card-bar"></div></div>
+        <div class="prog-card-bar-bg"><div class="prog-card-bar" style="width:${pct}%"></div></div>
       `;
       const editBtn = document.createElement('button');
       editBtn.className='prog-card-edit'; editBtn.textContent='✎';
@@ -519,7 +530,7 @@ function renderHistoryPreview(){
   const el = document.getElementById('history-preview');
   el.innerHTML='';
   const recent = [...state.history].reverse().slice(0,4);
-  if(!recent.length){ el.innerHTML='<div style="color:#333;font-size:12px;padding:4px 0;">No sessions logged yet.</div>'; return; }
+  if(!recent.length){ el.innerHTML='<div style="color:#8a8a8a;font-size:12px;padding:4px 0;">No sessions logged yet.</div>'; return; }
   recent.forEach(h=>{
     const row = document.createElement('div');
     row.className='hist-row';
@@ -662,7 +673,16 @@ document.getElementById('pe-back').addEventListener('click',()=>{
 //  SESSION
 // ══════════════════════════════════════════════
 function startSession(progId){
+  // Resume the same in-progress session without resetting anything
+  if(sessionInProgress && activeProgId===progId){
+    renderSession(); showScreen('session'); return;
+  }
+  // Switching to a different programme while one is live → confirm before discarding
+  if(sessionInProgress && activeProgId!==progId){
+    if(!confirm('Discard your in-progress session and start a new one?')) return;
+  }
   activeProgId = progId;
+  sessionInProgress = true;
   const prog = state.programmes.find(p=>p.id===progId);
   sessionSets = JSON.parse(JSON.stringify(prog.exercises)).map(ex=>({
     name: ex.name,
@@ -830,8 +850,9 @@ function updateSessionHeader(){
   finBtn.className=(done===total&&total>0)?'ready':'';
 }
 
+// Non-destructive: go home but keep the session alive (timer keeps running). Resume from the card.
 document.getElementById('sess-back').addEventListener('click',()=>{
-  if(confirm('End session without saving?')){ clearInterval(sessTimerInt); renderHome(); showScreen('home'); }
+  renderHome(); showScreen('home');
 });
 
 document.getElementById('sess-finish').addEventListener('click',()=>{
@@ -858,6 +879,8 @@ function finishSession(){
   };
   state.history.push(entry);
   save();
+  sessionInProgress = false;
+  activeProgId = null;
   showSummary(entry);
 }
 
@@ -1031,7 +1054,7 @@ function showSummary(entry){
   entry.exercises.forEach(e=>{
     const v = e.sets.reduce((a,s)=>a+(Number(s.w)||0)*(Number(s.r)||0),0);
     const line=document.createElement('div'); line.className='sum-ex-line';
-    line.innerHTML=`<span class="sum-ex-name">${esc(e.name)} <span style="color:#444;">${e.sets.length}×</span></span><span class="sum-ex-vol">${Math.round(v).toLocaleString()} kg</span>`;
+    line.innerHTML=`<span class="sum-ex-name">${esc(e.name)} <span style="color:#9a9a9a;">${e.sets.length}×</span></span><span class="sum-ex-vol">${Math.round(v).toLocaleString()} kg</span>`;
     ex.appendChild(line);
   });
   document.getElementById('summary-modal').classList.add('active');
@@ -1048,7 +1071,7 @@ function renderHistoryScreen(){
   const list = document.getElementById('hs-list');
   list.innerHTML='';
   const entries = [...state.history].reverse();
-  if(!entries.length){ list.innerHTML='<div style="padding:20px;color:#333;font-size:13px;">No sessions yet.</div>'; return; }
+  if(!entries.length){ list.innerHTML='<div style="padding:20px;color:#8a8a8a;font-size:13px;">No sessions yet.</div>'; return; }
   entries.forEach(h=>{
     const el=document.createElement('div'); el.className='hs-entry';
     const exLines = h.exercises.map(e=>{
