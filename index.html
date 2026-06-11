@@ -118,9 +118,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 #hs-list{padding:0 20px;}
 .hs-entry{border-bottom:1px solid #111;padding:16px 0;}
 .hs-entry:last-child{border-bottom:none;}
-.hs-entry-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.hs-entry-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
 .hs-entry-prog{font-size:14px;font-weight:700;color:#fff;}
+.hs-entry-right{display:flex;align-items:center;gap:10px;}
 .hs-entry-date{font-size:11px;color:#9a9a9a;}
+.hs-entry-del{background:none;border:1px solid #5a2626;border-radius:6px;color:#ff6b6b;font-size:13px;line-height:1;width:28px;height:26px;padding:0;flex:none;}
 .hs-entry-exes{display:flex;flex-direction:column;gap:4px;}
 .hs-ex-line{font-size:12px;color:#adadad;}
 .hs-ex-name{color:#888;font-weight:600;}
@@ -133,6 +135,8 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 .modal-h{font-size:18px;font-weight:700;color:#fff;}
 .modal-primary{width:100%;margin-top:8px;padding:14px;background:#DBFF00;border:none;border-radius:12px;color:#000;font-size:14px;font-weight:800;letter-spacing:0.5px;}
 .modal-ghost{width:100%;margin-top:10px;padding:11px;background:none;border:none;color:#9a9a9a;font-size:12px;letter-spacing:1px;}
+.modal-danger{width:100%;margin-top:10px;padding:13px;background:none;border:1px solid #5a2626;border-radius:12px;color:#ff6b6b;font-size:13px;font-weight:700;letter-spacing:0.5px;}
+#end-hint{font-size:13px;color:#9a9a9a;margin-top:8px;margin-bottom:4px;}
 
 /* ── ADJUST POPUP ── */
 #adjust-ex{margin-bottom:4px;}
@@ -316,6 +320,18 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
     </div>
     <button id="adjust-apply" class="modal-primary">Apply for next time</button>
     <button id="adjust-skip" class="modal-ghost">Keep as is</button>
+  </div>
+</div>
+
+<!-- END SESSION: save or discard -->
+<div id="end-modal" class="overlay-modal">
+  <div class="modal-sheet">
+    <div class="modal-kicker">END SESSION</div>
+    <div id="end-h" class="modal-h">Save this session?</div>
+    <div id="end-hint"></div>
+    <button id="end-save" class="modal-primary">Save &amp; finish</button>
+    <button id="end-discard" class="modal-danger">Discard session</button>
+    <button id="end-keep" class="modal-ghost">Keep going</button>
   </div>
 </div>
 
@@ -855,11 +871,35 @@ document.getElementById('sess-back').addEventListener('click',()=>{
   renderHome(); showScreen('home');
 });
 
-document.getElementById('sess-finish').addEventListener('click',()=>{
-  const {done}=sessionTotals();
-  if(done===0){ alert('Complete at least one set first.'); return; }
-  finishSession();
-});
+// Tapping FINISH always asks first — save, discard (e.g. started by accident), or keep going.
+document.getElementById('sess-finish').addEventListener('click', openEndModal);
+
+function openEndModal(){
+  const {done,total}=sessionTotals();
+  const saveBtn=document.getElementById('end-save');
+  const h=document.getElementById('end-h');
+  const hint=document.getElementById('end-hint');
+  if(done===0){
+    h.textContent='Discard this session?';
+    hint.textContent='No sets completed yet — nothing to save.';
+    saveBtn.style.display='none';
+  } else {
+    h.textContent='Save this session?';
+    hint.textContent=done+' of '+total+' sets done. Saving adds it to your history.';
+    saveBtn.style.display='';
+  }
+  document.getElementById('end-modal').classList.add('active');
+}
+function closeEndModal(){ document.getElementById('end-modal').classList.remove('active'); }
+function discardSession(){
+  clearInterval(sessTimerInt);
+  sessionInProgress=false; activeProgId=null; sessionSets=[];
+  sessStart=null; sessEnd=null;
+  closeEndModal(); renderHome(); showScreen('home');
+}
+document.getElementById('end-save').addEventListener('click',()=>{ closeEndModal(); finishSession(); });
+document.getElementById('end-discard').addEventListener('click', discardSession);
+document.getElementById('end-keep').addEventListener('click', closeEndModal);
 
 function finishSession(){
   sessEnd = Date.now();
@@ -1082,10 +1122,19 @@ function renderHistoryScreen(){
     el.innerHTML=`
       <div class="hs-entry-top">
         <span class="hs-entry-prog">${esc(h.progName)}</span>
-        <span class="hs-entry-date">${fmtDateShort(h.date)}${dur}</span>
+        <span class="hs-entry-right">
+          <span class="hs-entry-date">${fmtDateShort(h.date)}${dur}</span>
+          <button class="hs-entry-del" title="Delete session">✕</button>
+        </span>
       </div>
       <div class="hs-entry-exes">${exLines}</div>
     `;
+    el.querySelector('.hs-entry-del').addEventListener('click',()=>{
+      if(confirm('Delete this session from history? This cannot be undone.')){
+        state.history = state.history.filter(x=>x.date!==h.date);
+        save(); renderHistoryScreen();
+      }
+    });
     list.appendChild(el);
   });
 }
