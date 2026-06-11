@@ -360,14 +360,14 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 // ══════════════════════════════════════════════
 //  STORAGE
 // ══════════════════════════════════════════════
-const KEY = 'gym-v2';
+const KEY = 'gym-v3';
 function loadRaw(){ try{ const d=localStorage.getItem(KEY); return d?JSON.parse(d):null; }catch(e){return null;} }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
 
 // ══════════════════════════════════════════════
 //  MUSCLE GROUPS + EXERCISE LIBRARY
 // ══════════════════════════════════════════════
-const MUSCLES = ['Chest','Shoulders','Back','Legs','Arms','Core','Glutes','Other'];
+const MUSCLES = ['Chest','Triceps','Back','Biceps','Shoulders','Legs','Arms','Core','Glutes','Other'];
 
 const MUSCLE_GUESS = {
   'bench press':'Chest','chest fly':'Chest','incline press':'Chest','cable crossover':'Chest','push up':'Chest','dumbbell press':'Chest',
@@ -381,19 +381,30 @@ const MUSCLE_GUESS = {
 function guessMuscle(name){ return MUSCLE_GUESS[(name||'').trim().toLowerCase()] || 'Other'; }
 
 const SEED_LIBRARY = [
-  {name:'Bench Press',muscle:'Chest'},{name:'Incline Press',muscle:'Chest'},{name:'Chest Fly',muscle:'Chest'},
-  {name:'Cable Crossover',muscle:'Chest'},{name:'Dumbbell Press',muscle:'Chest'},{name:'Push Up',muscle:'Chest'},
-  {name:'Shoulder Press',muscle:'Shoulders'},{name:'Lateral Raise',muscle:'Shoulders'},{name:'Front Raise',muscle:'Shoulders'},
-  {name:'Rear Delt Fly',muscle:'Shoulders'},{name:'Arnold Press',muscle:'Shoulders'},{name:'Face Pull',muscle:'Shoulders'},
-  {name:'Deadlift',muscle:'Back'},{name:'Barbell Row',muscle:'Back'},{name:'Lat Pulldown',muscle:'Back'},
-  {name:'Pull Up',muscle:'Back'},{name:'Seated Row',muscle:'Back'},{name:'T-Bar Row',muscle:'Back'},
-  {name:'Squat',muscle:'Legs'},{name:'Leg Press',muscle:'Legs'},{name:'Romanian Deadlift',muscle:'Legs'},
-  {name:'Leg Extension',muscle:'Legs'},{name:'Leg Curl',muscle:'Legs'},{name:'Calf Raise',muscle:'Legs'},{name:'Lunge',muscle:'Legs'},
-  {name:'Bicep Curl',muscle:'Arms'},{name:'Hammer Curl',muscle:'Arms'},{name:'Preacher Curl',muscle:'Arms'},
-  {name:'Tricep Pushdown',muscle:'Arms'},{name:'Skull Crusher',muscle:'Arms'},{name:'Dips',muscle:'Arms'},
-  {name:'Plank',muscle:'Core'},{name:'Cable Crunch',muscle:'Core'},{name:'Hanging Leg Raise',muscle:'Core'},
-  {name:'Russian Twist',muscle:'Core'},{name:'Ab Rollout',muscle:'Core'},
-  {name:'Hip Thrust',muscle:'Glutes'},{name:'Glute Bridge',muscle:'Glutes'},{name:'Bulgarian Split Squat',muscle:'Glutes'},{name:'Cable Kickback',muscle:'Glutes'}
+  // Chest
+  {name:'Flat Barbell Bench Press',muscle:'Chest'},{name:'Incline (45°) Press',muscle:'Chest'},
+  {name:'Fly Machine (Pec Deck)',muscle:'Chest'},{name:'Flat Dumbbell Press',muscle:'Chest'},
+  {name:'Incline Dumbbell Press',muscle:'Chest'},{name:'Decline Dumbbell Press',muscle:'Chest'},{name:'Cable Fly',muscle:'Chest'},
+  // Triceps
+  {name:'Cable Rope Pushdown',muscle:'Triceps'},{name:'EZ-Bar Skull Crusher (flat)',muscle:'Triceps'},
+  {name:'EZ-Bar Overhead Extension (standing)',muscle:'Triceps'},{name:'Triceps Dip Machine',muscle:'Triceps'},
+  {name:'Overhead Rope Extension',muscle:'Triceps'},{name:'Single-Arm Cable Kickback',muscle:'Triceps'},{name:'Close-Grip Bench Press',muscle:'Triceps'},
+  // Back
+  {name:'Single-Arm Bent-Over Cable Row (swim catch)',muscle:'Back'},{name:'Lat Pulldown',muscle:'Back'},
+  {name:'Chest-Supported Row Machine (pad on chest)',muscle:'Back'},{name:'Seated Cable Row',muscle:'Back'},
+  {name:'Straight-Arm Pulldown',muscle:'Back'},{name:'Wide-Grip Pulldown',muscle:'Back'},{name:'Single-Arm Dumbbell Row',muscle:'Back'},
+  // Biceps
+  {name:'Dumbbell Curl (lift + twist)',muscle:'Biceps'},{name:'Hammer Curl',muscle:'Biceps'},
+  {name:'EZ-Bar Curl (two hands)',muscle:'Biceps'},{name:'Reverse-Grip Straight Bar Curl (palms down)',muscle:'Biceps'},
+  {name:'Incline Dumbbell Curl',muscle:'Biceps'},{name:'Cable Curl',muscle:'Biceps'},{name:'Preacher Curl',muscle:'Biceps'},
+  // Shoulders
+  {name:'Shoulder Press (bar or dumbbell)',muscle:'Shoulders'},{name:'Side Lateral Raise',muscle:'Shoulders'},
+  {name:'Front Raise',muscle:'Shoulders'},{name:'Upright Row (to chin)',muscle:'Shoulders'},
+  {name:'Arnold Press',muscle:'Shoulders'},{name:'Cable Lateral Raise',muscle:'Shoulders'},{name:'Rear Delt Fly / Face Pull',muscle:'Shoulders'},
+  // Legs
+  {name:'Leg Press',muscle:'Legs'},{name:'Leg Extension (straighten)',muscle:'Legs'},
+  {name:'Leg Curl (bend)',muscle:'Legs'},{name:'Deadlift',muscle:'Legs'},
+  {name:'Hack Squat Machine',muscle:'Legs'},{name:'Glute Kickback Machine (single)',muscle:'Legs'},{name:'Calf Raise (seated or standing)',muscle:'Legs'}
 ];
 
 // ══════════════════════════════════════════════
@@ -401,30 +412,35 @@ const SEED_LIBRARY = [
 // ══════════════════════════════════════════════
 const DEFAULT = {
   programmes:[
-    { id:1, name:'Chest & Shoulders', exercises:[
-      {id:101,name:'Bench Press',     muscle:'Chest',    sets:[{w:30,r:20},{w:30,r:20},{w:30,r:20}]},
-      {id:102,name:'Chest Fly',       muscle:'Chest',    sets:[{w:12,r:20},{w:12,r:20},{w:12,r:20}]},
-      {id:103,name:'Incline Press',   muscle:'Chest',    sets:[{w:25,r:18},{w:25,r:18},{w:25,r:18}]},
-      {id:104,name:'Cable Crossover', muscle:'Chest',    sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},
-      {id:105,name:'Shoulder Press',  muscle:'Shoulders',sets:[{w:20,r:20},{w:20,r:20},{w:20,r:20}]},
-      {id:106,name:'Lateral Raise',   muscle:'Shoulders',sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},
-      {id:107,name:'Front Raise',     muscle:'Shoulders',sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},
-      {id:108,name:'Rear Delt Fly',   muscle:'Shoulders',sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},
+    { id:1, name:'Chest + Triceps', exercises:[
+      {id:101,name:'Flat Barbell Bench Press',            muscle:'Chest',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:102,name:'Incline (45°) Press',                 muscle:'Chest',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:103,name:'Fly Machine (Pec Deck)',              muscle:'Chest',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:104,name:'Flat Dumbbell Press',                 muscle:'Chest',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:105,name:'Cable Rope Pushdown',                 muscle:'Triceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:106,name:'EZ-Bar Skull Crusher (flat)',         muscle:'Triceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:107,name:'EZ-Bar Overhead Extension (standing)',muscle:'Triceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:108,name:'Triceps Dip Machine',                 muscle:'Triceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
     ]},
-    { id:2, name:'Pull', exercises:[
-      {id:201,name:'Deadlift',    muscle:'Back',sets:[{w:120,r:5},{w:120,r:5},{w:120,r:5}]},
-      {id:202,name:'Barbell Row', muscle:'Back',sets:[{w:70,r:8},{w:70,r:8},{w:70,r:8}]},
-      {id:203,name:'Bicep Curl',  muscle:'Arms',sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12}]},
+    { id:2, name:'Back + Biceps', exercises:[
+      {id:201,name:'Single-Arm Bent-Over Cable Row (swim catch)',  muscle:'Back',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:202,name:'Lat Pulldown',                                 muscle:'Back',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:203,name:'Chest-Supported Row Machine (pad on chest)',   muscle:'Back',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:204,name:'Seated Cable Row',                             muscle:'Back',  sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:205,name:'Dumbbell Curl (lift + twist)',                 muscle:'Biceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:206,name:'Hammer Curl',                                  muscle:'Biceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:207,name:'EZ-Bar Curl (two hands)',                      muscle:'Biceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:208,name:'Reverse-Grip Straight Bar Curl (palms down)',  muscle:'Biceps',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
     ]},
-    { id:3, name:'Legs', exercises:[
-      {id:301,name:'Squat',       muscle:'Legs',sets:[{w:100,r:5},{w:100,r:5},{w:100,r:5}]},
-      {id:302,name:'Leg Press',   muscle:'Legs',sets:[{w:140,r:10},{w:140,r:10},{w:140,r:10}]},
-      {id:303,name:'Calf Raise',  muscle:'Legs',sets:[{w:60,r:15},{w:60,r:15},{w:60,r:15}]},
-    ]},
-    { id:4, name:'Full Body', exercises:[
-      {id:401,name:'Squat',       muscle:'Legs', sets:[{w:80,r:8},{w:80,r:8},{w:80,r:8}]},
-      {id:402,name:'Bench Press', muscle:'Chest',sets:[{w:70,r:8},{w:70,r:8},{w:70,r:8}]},
-      {id:403,name:'Deadlift',    muscle:'Back', sets:[{w:100,r:5},{w:100,r:5}]},
+    { id:3, name:'Shoulders + Legs', exercises:[
+      {id:301,name:'Shoulder Press (bar or dumbbell)',muscle:'Shoulders',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:302,name:'Side Lateral Raise',              muscle:'Shoulders',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:303,name:'Front Raise',                     muscle:'Shoulders',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:304,name:'Upright Row (to chin)',           muscle:'Shoulders',sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:305,name:'Leg Press',                       muscle:'Legs',     sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:306,name:'Leg Extension (straighten)',      muscle:'Legs',     sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:307,name:'Leg Curl (bend)',                 muscle:'Legs',     sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
+      {id:308,name:'Deadlift',                        muscle:'Legs',     sets:[{w:0,r:20},{w:0,r:20},{w:0,r:20}]},
     ]},
   ],
   library: SEED_LIBRARY,
