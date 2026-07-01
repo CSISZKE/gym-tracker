@@ -95,7 +95,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 .ex-hdr-prog{font-size:11px;color:#9a9a9a;font-family:monospace;transition:color 0.2s;}
 .ex-hdr-prog.complete{color:#DBFF00;}
 .ex-hdr-right{display:flex;align-items:center;gap:6px;}
-.ex-act{background:none;border:1px solid #222;border-radius:6px;color:#b8b8b8;font-size:14px;width:30px;height:30px;line-height:1;padding:0;}
+.ex-act{background:none;border:1px solid #222;border-radius:6px;color:#b8b8b8;font-size:16px;width:34px;height:34px;line-height:1;padding:0;flex:none;}
+.ex-act-del{border-color:#4d2222;color:#c96a6a;}
+.ex-hdr-namewrap{flex:1;min-width:0;}
+.ex-hdr-progwrap{display:flex;align-items:center;gap:8px;flex:none;}
 .ex-mini-bg{width:40px;height:3px;background:#1a1a1a;border-radius:2px;overflow:hidden;margin-left:2px;}
 .ex-mini-bar{height:100%;background:#DBFF00;width:0%;transition:width 0.3s;}
 .ex-body{padding:0 16px;}
@@ -814,31 +817,37 @@ function buildSessionCard(ex,ei){
   const card = document.createElement('div'); card.className='ex-card';
 
   const hdr = document.createElement('div'); hdr.className='ex-hdr';
-  const left = document.createElement('div'); left.className='ex-hdr-left';
-  const nameWrap = document.createElement('div');
+
+  // Far left: swap (kept well away from delete to avoid mis-taps)
+  const swapBtn = document.createElement('button'); swapBtn.className='ex-act ex-act-swap'; swapBtn.textContent='⇄'; swapBtn.title='Swap exercise';
+  swapBtn.addEventListener('click', e=>{ e.stopPropagation(); openSwap(ei); });
+
+  // Name + muscle (takes the space)
+  const nameWrap = document.createElement('div'); nameWrap.className='ex-hdr-namewrap';
   const nameEl = document.createElement('div'); nameEl.className='ex-hdr-name'; nameEl.textContent=ex.name;
   const muscleEl = document.createElement('div'); muscleEl.className='ex-hdr-muscle'; muscleEl.textContent=ex.muscle||'';
   nameWrap.appendChild(nameEl); nameWrap.appendChild(muscleEl);
+
+  // Sets progress + mini bar
+  const progWrap = document.createElement('div'); progWrap.className='ex-hdr-progwrap';
   const progEl = document.createElement('span');
   progEl.className='ex-hdr-prog'+(done===total&&total>0?' complete':'');
   progEl.textContent=`${done}/${total}`;
-  left.appendChild(nameWrap); left.appendChild(progEl);
-
-  const right = document.createElement('div'); right.className='ex-hdr-right';
-  const swapBtn = document.createElement('button'); swapBtn.className='ex-act'; swapBtn.textContent='⇄'; swapBtn.title='Swap exercise';
-  swapBtn.addEventListener('click', e=>{ e.stopPropagation(); openSwap(ei); });
-  const delBtn = document.createElement('button'); delBtn.className='ex-act'; delBtn.textContent='×'; delBtn.title='Remove exercise';
-  delBtn.addEventListener('click', e=>{ e.stopPropagation();
-    if(confirm('Remove '+(ex.name||'this exercise')+' from this workout?')){ sessionSets.splice(ei,1); renderSession(); }
-  });
   const miniBg = document.createElement('div'); miniBg.className='ex-mini-bg';
   const miniBar = document.createElement('div'); miniBar.className='ex-mini-bar';
   miniBar.style.width=(total?(done/total)*100:0)+'%';
   miniBg.appendChild(miniBar);
-  const caret = document.createElement('div'); caret.className='ex-hdr-caret'; caret.textContent='▸';
-  right.appendChild(swapBtn); right.appendChild(delBtn); right.appendChild(miniBg); right.appendChild(caret);
+  progWrap.appendChild(progEl); progWrap.appendChild(miniBg);
 
-  hdr.appendChild(left); hdr.appendChild(right);
+  // Delete (muted red) — on the right, before the collapse caret
+  const delBtn = document.createElement('button'); delBtn.className='ex-act ex-act-del'; delBtn.textContent='×'; delBtn.title='Remove exercise';
+  delBtn.addEventListener('click', e=>{ e.stopPropagation();
+    if(confirm('Remove '+(ex.name||'this exercise')+' from this workout?')){ sessionSets.splice(ei,1); renderSession(); }
+  });
+
+  const caret = document.createElement('div'); caret.className='ex-hdr-caret'; caret.textContent='▸';
+
+  hdr.appendChild(swapBtn); hdr.appendChild(nameWrap); hdr.appendChild(progWrap); hdr.appendChild(delBtn); hdr.appendChild(caret);
 
   const body = document.createElement('div'); body.className='ex-body';
 
