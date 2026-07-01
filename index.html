@@ -203,6 +203,13 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 #t-pause{background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#ccc;padding:10px 20px;font-size:13px;}
 #t-skip{background:#DBFF00;border:none;border-radius:8px;color:#000;padding:10px 20px;font-size:13px;font-weight:700;}
 #timer-hint{color:#FF40B4;font-size:11px;letter-spacing:2px;margin-top:16px;min-height:14px;}
+.add-ex-btn{display:block;width:calc(100% - 40px);margin:4px 20px 24px;padding:13px;background:none;border:1px dashed #2a2a2a;border-radius:10px;color:#b8b8b8;font-size:13px;letter-spacing:1px;}
+.ex-rest{display:flex;align-items:center;gap:8px;padding:10px 0 4px;font-size:12px;color:#adadad;border-bottom:1px solid #1e1e1e;margin-bottom:4px;}
+.ex-rest .ex-rest-chip{background:#161616;border:1px solid #2a2a2a;border-radius:6px;color:#DBFF00;font-size:12px;padding:5px 12px;font-family:monospace;}
+.ex-hdr-caret{color:#888;font-size:11px;margin-top:3px;transition:transform 0.15s;}
+#recent-toggle{cursor:pointer;user-select:none;}
+#recent-caret{color:#888;font-size:9px;}
+.pe-rest-chip{background:#161616;border:1px solid #2a2a2a;border-radius:20px;color:#DBFF00;font-size:10px;letter-spacing:0.5px;padding:5px 10px;white-space:nowrap;font-family:monospace;}
 </style>
 </head>
 <body>
@@ -214,8 +221,8 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
     <div id="home-subtitle">Pick a session.</div>
   </div>
   <div id="programmes-grid"></div>
-  <div class="home-section-title">RECENT SESSIONS</div>
-  <div id="history-preview"></div>
+  <div class="home-section-title" id="recent-toggle">RECENT SESSIONS <span id="recent-caret">▸</span></div>
+  <div id="history-preview" style="display:none;"></div>
   <button id="view-all-history">VIEW ALL HISTORY</button>
 </div>
 
@@ -278,10 +285,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
       <div id="t-display">01:30</div>
     </div>
     <div id="timer-presets">
-      <button class="tpre" data-s="60">60s</button>
-      <button class="tpre active" data-s="90">90s</button>
-      <button class="tpre" data-s="120">120s</button>
-      <button class="tpre" data-s="180">180s</button>
+      <button class="tpre" data-s="60">1:00</button>
+      <button class="tpre active" data-s="90">1:30</button>
+      <button class="tpre" data-s="120">2:00</button>
     </div>
     <div id="timer-btns">
       <button id="t-pause">Pause</button>
@@ -467,20 +473,26 @@ const DEFAULT = {
   history:[] // [{date, progId, progName, durationMs, exercises:[{name,muscle,sets:[{w,r}]}]}]
 };
 
+const DEFAULT_REST = 90; // seconds — default rest between sets (1:30)
+
 // Load + migrate
 let state = (function(){
   let s = loadRaw();
   if(!s) s = JSON.parse(JSON.stringify(DEFAULT));
   if(!s.history) s.history = [];
   if(!s.library || !s.library.length) s.library = JSON.parse(JSON.stringify(SEED_LIBRARY));
-  (s.programmes||[]).forEach(p=>(p.exercises||[]).forEach(e=>{ if(!e.muscle) e.muscle = guessMuscle(e.name); }));
+  (s.programmes||[]).forEach(p=>(p.exercises||[]).forEach(e=>{
+    if(!e.muscle) e.muscle = guessMuscle(e.name);
+    if(e.restSec==null) e.restSec = DEFAULT_REST;
+  }));
   return s;
 })();
 
 // Active session state
 let activeProgId = null;
 let sessionInProgress = false; // true while a session is open (lets you leave home and resume)
-let sessionSets = []; // [{name,muscle,sets:[{w,r,done}],adjustShown}]
+let expandedEx = new Set(); // ids of exercises expanded in the current session (collapsed by default)
+let sessionSets = []; // [{id,name,muscle,restSec,sets:[{w,r,done}],adjustShown,adjusted,nextSets}]
 let editingProgId = null;
 let editorProg = null;  // working copy while editing
 let sessStart = null, sessEnd = null, sessTimerInt = null;
@@ -569,6 +581,14 @@ document.getElementById('view-all-history').addEventListener('click',()=>{
   showScreen('history-screen');
 });
 
+// RECENT SESSIONS collapsed by default — tap the header to expand/collapse.
+document.getElementById('recent-toggle').addEventListener('click',()=>{
+  const hp=document.getElementById('history-preview');
+  const open = hp.style.display!=='none';
+  hp.style.display = open?'none':'';
+  document.getElementById('recent-caret').textContent = open?'▸':'▾';
+});
+
 // ══════════════════════════════════════════════
 //  PROGRAMME EDITOR  (works on a deep copy)
 // ══════════════════════════════════════════════
@@ -613,10 +633,17 @@ function buildEditorCard(ex,ei){
     });
   });
 
+  const restChip = document.createElement('button');
+  restChip.className='pe-rest-chip';
+  restChip.textContent = '⏱ '+fmtRest(ex.restSec||DEFAULT_REST);
+  restChip.addEventListener('click',()=>{
+    openRestPicker(ex.restSec||DEFAULT_REST, v=>{ editorProg.exercises[ei].restSec=v; renderEditorExercises(); });
+  });
+
   const del = document.createElement('button');
   del.className='pe-ex-del'; del.textContent='×';
   del.addEventListener('click',()=>{ editorProg.exercises.splice(ei,1); renderEditorExercises(); });
-  hdr.appendChild(nameIn); hdr.appendChild(muscleChip); hdr.appendChild(del);
+  hdr.appendChild(nameIn); hdr.appendChild(muscleChip); hdr.appendChild(restChip); hdr.appendChild(del);
 
   const setsEl = document.createElement('div');
   setsEl.className='pe-ex-sets';
@@ -667,7 +694,7 @@ function buildEditorSetRow(ex,ei,set,si){
 }
 
 document.getElementById('pe-add-ex').addEventListener('click',()=>{
-  editorProg.exercises.push({id:Date.now(),name:'',muscle:'Other',sets:[{w:60,r:8},{w:60,r:8},{w:60,r:8}]});
+  editorProg.exercises.push({id:Date.now(),name:'',muscle:'Other',restSec:DEFAULT_REST,sets:[{w:60,r:8},{w:60,r:8},{w:60,r:8}]});
   renderEditorExercises();
 });
 
@@ -709,11 +736,16 @@ function startSession(progId){
   sessionInProgress = true;
   const prog = state.programmes.find(p=>p.id===progId);
   sessionSets = JSON.parse(JSON.stringify(prog.exercises)).map(ex=>({
+    id: ex.id,
     name: ex.name,
     muscle: ex.muscle || 'Other',
+    restSec: ex.restSec || DEFAULT_REST,
     sets: ex.sets.map(s=>({...s,done:false})),
-    adjustShown: false
+    adjustShown: false,
+    adjusted: false,
+    nextSets: null
   }));
+  expandedEx = new Set(); // all collapsed at start
   sessStart = null; sessEnd = null; clearInterval(sessTimerInt);
   document.getElementById('sess-prog-name').textContent = prog.name.toUpperCase();
   document.getElementById('sess-date').textContent = new Date().toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'short'});
@@ -747,7 +779,33 @@ function renderSession(){
   const container = document.getElementById('sess-exercises');
   container.innerHTML='';
   sessionSets.forEach((ex,ei)=>container.appendChild(buildSessionCard(ex,ei)));
+  const addEx=document.createElement('button');
+  addEx.className='add-ex-btn'; addEx.textContent='+ ADD EXERCISE';
+  addEx.addEventListener('click', openAddExercise);
+  container.appendChild(addEx);
   updateSessionHeader();
+}
+
+// Add any exercise from any muscle group to the current workout (session-only until you save).
+function openAddExercise(){
+  const items=[];
+  MUSCLES.forEach(m=>{
+    const exs = state.library.filter(l=>l.muscle===m);
+    if(!exs.length) return;
+    items.push({type:'header',label:m});
+    exs.forEach(l=>items.push({type:'item',label:l.name,value:JSON.stringify({name:l.name,muscle:l.muscle})}));
+  });
+  openList('Add exercise', items, val=>{
+    const {name,muscle} = JSON.parse(val);
+    sessionSets.push({
+      id: Date.now(),
+      name, muscle,
+      restSec: DEFAULT_REST,
+      sets: [{w:0,r:20,done:false},{w:0,r:20,done:false},{w:0,r:20,done:false}],
+      adjustShown:false, adjusted:false, nextSets:null
+    });
+    renderSession();
+  });
 }
 
 function buildSessionCard(ex,ei){
@@ -777,11 +835,21 @@ function buildSessionCard(ex,ei){
   const miniBar = document.createElement('div'); miniBar.className='ex-mini-bar';
   miniBar.style.width=(total?(done/total)*100:0)+'%';
   miniBg.appendChild(miniBar);
-  right.appendChild(swapBtn); right.appendChild(delBtn); right.appendChild(miniBg);
+  const caret = document.createElement('div'); caret.className='ex-hdr-caret'; caret.textContent='▸';
+  right.appendChild(swapBtn); right.appendChild(delBtn); right.appendChild(miniBg); right.appendChild(caret);
 
   hdr.appendChild(left); hdr.appendChild(right);
 
   const body = document.createElement('div'); body.className='ex-body';
+
+  // Rest between sets — tap to change and save for this exercise
+  const restRow = document.createElement('div'); restRow.className='ex-rest';
+  const restLbl = document.createElement('span'); restLbl.textContent='⏱ Rest between sets';
+  const restChip = document.createElement('button'); restChip.className='ex-rest-chip'; restChip.textContent=fmtRest(ex.restSec||DEFAULT_REST);
+  restChip.addEventListener('click',()=>openRestPicker(ex.restSec||DEFAULT_REST, v=>{ sessionSets[ei].restSec=v; renderSession(); }));
+  restRow.appendChild(restLbl); restRow.appendChild(restChip);
+  body.appendChild(restRow);
+
   ex.sets.forEach((set,si)=>body.appendChild(buildSessionSetRow(ei,set,si)));
 
   const addSetBtn = document.createElement('button');
@@ -793,11 +861,18 @@ function buildSessionCard(ex,ei){
   });
   body.appendChild(addSetBtn);
 
-  let collapsed=false;
+  // Collapsed by default — tap the header to expand and work the sets.
+  // Expanded state persists across re-renders (ticking a set) via expandedEx.
+  let collapsed = !expandedEx.has(ex.id);
+  body.style.display = collapsed?'none':'';
+  hdr.className = 'ex-hdr'+(collapsed?' collapsed':'');
+  caret.textContent = collapsed?'▸':'▾';
   hdr.addEventListener('click',()=>{
     collapsed=!collapsed;
+    if(collapsed) expandedEx.delete(ex.id); else expandedEx.add(ex.id);
     body.style.display=collapsed?'none':'';
     hdr.className='ex-hdr'+(collapsed?' collapsed':'');
+    caret.textContent=collapsed?'▸':'▾';
   });
 
   card.appendChild(hdr); card.appendChild(body);
@@ -854,7 +929,7 @@ function onToggleSet(ei,si){
   if(isComplete && !wasComplete){
     if(!ex.adjustShown) openAdjust(ei);
   } else if(!isComplete){
-    startRestTimer();
+    startRestTimer(ei);
   }
 }
 
@@ -926,6 +1001,24 @@ function finishSession(){
     exercises
   };
   state.history.push(entry);
+
+  // Auto-carry: the day now becomes exactly what you did (swaps, adds, removes,
+  // weights, reps, rest). History above keeps the full record of every session.
+  if(prog){
+    prog.exercises = sessionSets.map(ex=>{
+      const sets = (ex.adjusted && ex.nextSets)
+        ? ex.nextSets.map(s=>({w:s.w,r:s.r}))
+        : ex.sets.map(s=>({w:s.w,r:s.r}));
+      return {
+        id: ex.id || Date.now()+Math.floor(Math.random()*100000),
+        name: ex.name,
+        muscle: ex.muscle || 'Other',
+        restSec: ex.restSec || DEFAULT_REST,
+        sets
+      };
+    });
+  }
+
   save();
   sessionInProgress = false;
   activeProgId = null;
@@ -941,13 +1034,11 @@ let adjustVals = {w:0,r:0,n:1};
 function openAdjust(ei){
   adjustEi = ei;
   const ex = sessionSets[ei];
-  const prog = state.programmes.find(p=>p.id===activeProgId);
-  const pe = prog ? prog.exercises.find(e=>e.name===ex.name) : null;
-  const src = pe || ex;
+  // Default the "next time" target to what you just did; you can bump from here.
   adjustVals = {
-    w: src.sets[0] ? src.sets[0].w : 0,
-    r: src.sets[0] ? src.sets[0].r : 8,
-    n: src.sets.length || 1
+    w: ex.sets[0] ? ex.sets[0].w : 0,
+    r: ex.sets[0] ? ex.sets[0].r : 8,
+    n: ex.sets.length || 1
   };
   document.getElementById('adjust-ex').textContent = ex.name;
   renderAdjust();
@@ -976,15 +1067,11 @@ document.getElementById('adj-n-val').addEventListener('click',()=>openWheel({lab
 
 document.getElementById('adjust-apply').addEventListener('click',()=>{
   const ex = sessionSets[adjustEi];
-  const prog = state.programmes.find(p=>p.id===activeProgId);
-  if(prog){
-    const pe = prog.exercises.find(e=>e.name===ex.name);
-    if(pe){
-      const newSets=[];
-      for(let i=0;i<adjustVals.n;i++) newSets.push({w:adjustVals.w,r:adjustVals.r});
-      pe.sets=newSets;
-      save();
-    }
+  if(ex){
+    const newSets=[];
+    for(let i=0;i<adjustVals.n;i++) newSets.push({w:adjustVals.w,r:adjustVals.r});
+    ex.nextSets = newSets;   // staged target for next time
+    ex.adjusted = true;      // finishSession will carry this instead of what was done
   }
   closeAdjust();
 });
@@ -1008,7 +1095,7 @@ function openSwap(ei){
     const ex = sessionSets[swapEi];
     ex.name = name; ex.muscle = muscle;
     ex.sets = ex.sets.map(s=>({w:s.w,r:s.r,done:false}));
-    ex.adjustShown = false;
+    ex.adjustShown = false; ex.adjusted = false; ex.nextSets = null;
     renderSession();
   });
 }
@@ -1154,20 +1241,24 @@ document.getElementById('hs-back').addEventListener('click',()=>showScreen('home
 // ══════════════════════════════════════════════
 const CIRC = 376.99;
 let tSec=90, tPreset=90, tRunning=false, tInterval=null, tDone=false, tLastPreset=90;
+let tExerciseIdx=null; // which session exercise this rest belongs to (so presets save to it)
 const tFg=document.getElementById('t-fg');
 const tDisp=document.getElementById('t-display');
 const tPause=document.getElementById('t-pause');
 const tHint=document.getElementById('timer-hint');
 
-function startRestTimer(){
-  tPreset=tLastPreset; tSec=tLastPreset; tRunning=true; tDone=false;
+function startRestTimer(ei){
+  tExerciseIdx = (ei!=null) ? ei : null;
+  const ex = (tExerciseIdx!=null) ? sessionSets[tExerciseIdx] : null;
+  const rest = (ex && ex.restSec) ? ex.restSec : DEFAULT_REST;
+  tLastPreset=rest; tPreset=rest; tSec=rest; tRunning=true; tDone=false;
   document.getElementById('timer-overlay').classList.add('active');
   tHint.textContent='';
   tFg.style.stroke='#DBFF00';
   updateTimerDisplay();
   clearInterval(tInterval);
   tInterval=setInterval(tickTimer,1000);
-  document.querySelectorAll('.tpre').forEach(b=>b.classList.toggle('active',Number(b.dataset.s)===tLastPreset));
+  document.querySelectorAll('.tpre').forEach(b=>b.classList.toggle('active',Number(b.dataset.s)===rest));
   tPause.textContent='Pause';
 }
 
@@ -1198,7 +1289,11 @@ document.querySelectorAll('.tpre').forEach(btn=>{
     e.stopPropagation();
     tLastPreset=Number(btn.dataset.s);
     tPreset=tLastPreset; tSec=tLastPreset; tRunning=true; tDone=false;
-    tHint.textContent='';
+    // Save this rest length for the exercise so it carries to next time.
+    if(tExerciseIdx!=null && sessionSets[tExerciseIdx]){
+      sessionSets[tExerciseIdx].restSec = tLastPreset;
+      tHint.textContent='saved for next time';
+    } else { tHint.textContent=''; }
     clearInterval(tInterval); tInterval=setInterval(tickTimer,1000);
     tFg.style.stroke='#DBFF00'; updateTimerDisplay();
     document.querySelectorAll('.tpre').forEach(b=>b.classList.toggle('active',b===btn));
@@ -1224,6 +1319,11 @@ document.getElementById('timer-overlay').addEventListener('click',()=>{ if(tDone
 // ══════════════════════════════════════════════
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function fmtNum(n){ n=Number(n)||0; return Number.isInteger(n) ? String(n) : n.toFixed(1); }
+function fmtRest(sec){ const m=Math.floor(sec/60), s=sec%60; return s?`${m}:${String(s).padStart(2,'0')}`:`${m}:00`; }
+function openRestPicker(current, onPick){
+  const opts=[60,90,120];
+  openList('Rest between sets', opts.map(s=>({type:'item',label:fmtRest(s)+(s===current?'   ✓':''),value:String(s)})), v=>onPick(Number(v)));
+}
 function fmtDateShort(iso){
   const d=new Date(iso);
   return d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'});
